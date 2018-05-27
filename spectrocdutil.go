@@ -58,7 +58,6 @@ func run(deviceName string, nLEDs int, lowest Note, bufferFrames int, periodFram
 	fftBinNotes := FFTBinNotes(bins, highest)
 	fftBinLEDs := make([]int, len(fftBinNotes))
 	for loop, _ := range fftBinLEDs {
-		fmt.Println(int(fftBinNotes[loop]))
 		fftBinLEDs[loop] = func() int {
 			switch {
 			case lowest <= fftBinNotes[loop] && fftBinNotes[loop] <= highest:
