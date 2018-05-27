@@ -7,7 +7,7 @@ import (
 )
 
 func ExecuteFFT(inputBuffer []int16, outputData []float64) {
-	if len(outputData) != len(inputBuffer)/2 {
+	if len(inputBuffer) != len(outputData)*2 {
 		panic("FFT with mismatched buffer sizes")
 	}
 	//startTime := time.Now()

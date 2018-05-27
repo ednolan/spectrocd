@@ -14,8 +14,17 @@ func InitCaptureCDQ(deviceName string, periodFrames int) (*alsa.CaptureDevice, e
 	return alsa.NewCaptureDevice(deviceName, 2, alsa.FormatS16LE, 44100, alsaBufferParams)
 }
 
-func readInterleavedSamples(device *alsa.CaptureDevice, readBuffer []int16) error {
+func ReadInterleavedSamples(device *alsa.CaptureDevice, readBuffer []int16) error {
 	// read samples
 	_, err := device.Read(readBuffer)
 	return err
+}
+
+func InterleavedStereoToMono(stereo []int16, mono []int16) {
+	if len(stereo) != len(mono)*2 {
+		panic("stereo to mono conversion with mismatched buffer sizes")
+	}
+	for loop := 0; loop < len(stereo); loop += 2 {
+		mono[loop/2] = int16((int32(stereo[loop]) + int32(stereo[loop+1])) / 2)
+	}
 }

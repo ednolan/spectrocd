@@ -1,0 +1,6 @@
+deviceName: hw:1,0
+nLEDs: 64
+lowest: 33 # low a, 55hz
+bufferFrames: 44100 # 1s buffer
+periodFrames: 1000 # ~4.5ms
+windowFrames: 8192 # ~186ms
