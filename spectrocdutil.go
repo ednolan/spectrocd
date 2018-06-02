@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func FFTBinNotes(bins int, highest Note) []Note {
@@ -69,21 +70,28 @@ func run(deviceName string, nLEDs int, lowest Note, bufferFrames int, periodFram
 	}
 
 	for {
+		start := time.Now()
 		select {
 		case <-gotInterrupt:
 			fmt.Println("interrupt")
 			os.Exit(0)
 		default:
+			fmt.Println(time.Since(start))
+
 			err = ReadInterleavedSamples(device, readBuffer)
 			if err != nil {
 				panic(err)
 			}
+
+			fmt.Println(time.Since(start))
 
 			// add samples to buffer
 			// convert interleaved stereo samples to mono
 			InterleavedStereoToMono(readBuffer, monoBuffer[monoBufferEnd:monoBufferEnd+periodFrames])
 			monoBufferEnd += periodFrames
 			windowEnd = monoBufferEnd
+
+			fmt.Println(time.Since(start))
 
 			// if end of buffer reached, copy window to beginning and reset bounds
 			if monoBufferEnd+periodFrames > monoBufferSize {
@@ -92,15 +100,24 @@ func run(deviceName string, nLEDs int, lowest Note, bufferFrames int, periodFram
 				monoBufferEnd = windowFrames
 			}
 
+			fmt.Println(time.Since(start))
+
 			// if window is loaded, update LED settings
 			if windowEnd >= windowFrames {
 				SetLEDs(monoBuffer[windowEnd-windowFrames:windowEnd], ledSettings, fftBinLEDs)
 			}
 
+			fmt.Println(time.Since(start))
+
 			for _, setting := range ledSettings {
 				fmt.Printf("%3d", setting)
 			}
 			fmt.Printf("\n")
+
+			fmt.Println(time.Since(start))
 		}
+		loopsPerSec, _ := time.ParseDuration("1s")
+		loopsPerSec /= time.Since(start)
+		fmt.Printf("loop took %s, %d loops per sec\n", time.Since(start), loopsPerSec)
 	}
 }
