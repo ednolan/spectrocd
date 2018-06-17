@@ -18,22 +18,22 @@ func FFTBinNotes(bins int, highest Note) []Note {
 	return fftBinNotes
 }
 
-func SetLEDs(window []int16, settings []uint8, fftBinLEDs []int) {
+func GetLEDLumas(window []int16, lumas []uint8, fftBinLEDs []int) {
 	fftData := make([]float64, len(window)/2)
-	ledSettingFloats := make([]float64, len(settings))
+	lumaFloats := make([]float64, len(lumas))
 	ExecuteFFT(window, fftData)
 	for fftBin, _ := range fftData {
 		if fftBinLEDs[fftBin] > 0 {
-			ledSettingFloats[fftBinLEDs[fftBin]] += fftData[fftBin]
+			lumaFloats[fftBinLEDs[fftBin]] += fftData[fftBin]
 		}
 	}
-	for led, settingFloat := range ledSettingFloats {
-		settings[led] = uint8(settingFloat / 100000)
+	for led, lumaFloat := range lumaFloats {
+		lumas[led] = uint8(lumaFloat / 100000)
 	}
 }
 
 func run(deviceName string, nLEDs int, lowest Note, bufferFrames int, periodFrames int,
-	windowFrames int) {
+	windowFrames int, ledLumas []uint8) {
 	var highest = Note(int(lowest) + nLEDs - 1)
 	// mono audio buffer
 	var monoBufferSize int = bufferFrames
@@ -55,7 +55,6 @@ func run(deviceName string, nLEDs int, lowest Note, bufferFrames int, periodFram
 	monoBuffer := make([]int16, monoBufferSize)
 	monoBufferEnd := 0
 	windowEnd := 0
-	ledSettings := make([]uint8, nLEDs)
 	fftBinNotes := FFTBinNotes(bins, highest)
 	fftBinLEDs := make([]int, len(fftBinNotes))
 	for loop, _ := range fftBinLEDs {
@@ -104,13 +103,13 @@ func run(deviceName string, nLEDs int, lowest Note, bufferFrames int, periodFram
 
 			// if window is loaded, update LED settings
 			if windowEnd >= windowFrames {
-				SetLEDs(monoBuffer[windowEnd-windowFrames:windowEnd], ledSettings, fftBinLEDs)
+				GetLEDLumas(monoBuffer[windowEnd-windowFrames:windowEnd], ledLumas, fftBinLEDs)
 			}
 
 			fmt.Println(time.Since(start))
 
-			for _, setting := range ledSettings {
-				fmt.Printf("%3d", setting)
+			for _, luma := range ledLumas {
+				fmt.Printf("%3d", luma)
 			}
 			fmt.Printf("\n")
 

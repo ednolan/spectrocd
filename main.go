@@ -27,5 +27,12 @@ func main() {
 	// set window size
 	var windowFrames int = viper.GetInt("windowFrames")
 
-	run(deviceName, nLEDs, lowest, bufferFrames, periodFrames, windowFrames)
+	ledLumas := make([]uint8, nLEDs)
+
+	InitUnicornHat()
+
+	go DisplayLoop(nLEDs, ledLumas)
+
+	run(deviceName, nLEDs, lowest, bufferFrames, periodFrames, windowFrames, ledLumas)
+
 }
