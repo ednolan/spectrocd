@@ -13,7 +13,7 @@ func Frequency(note Note) float64 {
 	return a4Pitch * math.Pow(halfStep, float64(int(note-a4)))
 }
 
-func closestNote(frequency float64, highest Note) Note {
+func ClosestNote(frequency float64, highest Note) Note {
 	// linear search closest note
 	var closest Note = 0
 	if frequency < Frequency(0) {

@@ -2,17 +2,41 @@ package main
 import (
 	"fmt"
 	"github.com/jgarff/rpi_ws281x/golang/ws2811"
-	//"time"
+	"github.com/lucasb-eyer/go-colorful"
+	"time"
 )
 
 func InitUnicornHat() {
 	ws2811.Init(10, 64, 64)
 }
 
-func DisplayLoop(n int, ledLumas []uint8) {
+func FlipRows(ledSettings []uint32) []uint32 {
+	// TODO
+	return ledSettings
+}
+
+func GetLEDSettings(ledLumas []uint8) []uint32 {
+	var multiplier float64 = 5;
+	base_hue := int64(float64(time.Now().Unix()) * multiplier) % 360
+	hue := base_hue
+	ledSettings := make([]uint32, 64)
+	for i := 0; i < 64; i++ {
+		value := float64(ledLumas[i]) / 255.0
+		c := colorful.Hsv(float64(hue), 1.0, value).Clamped()
+		setting := uint32(c.R * 255) << 16 | uint32(c.G * 255) << 8 | uint32(c.B * 255)
+		ledSettings[i] = setting
+		hue += 11
+		hue %= 360
+	}
+	ledSettings = FlipRows(ledSettings)
+	return ledSettings
+}
+
+func DisplayLoop(ledLumas []uint8) {
 	for {
-		for i := 0; i < n; i++ {
-			ws2811.SetLed(i, uint32(ledLumas[i] / 4)<<12)
+		ledSettings := GetLEDSettings(ledLumas)
+		for i := 0; i < 64; i++ {
+			ws2811.SetLed(i, ledSettings[i])
 		}
 		err := ws2811.Render()
 		if err != nil {

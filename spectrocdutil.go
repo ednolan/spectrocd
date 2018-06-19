@@ -13,7 +13,7 @@ func FFTBinNotes(bins int, highest Note) []Note {
 	for fftBin := 0; fftBin < bins; fftBin += 1 {
 		var windowSize = bins * 2
 		binFrequency := float64(fftBin * 44100 / windowSize)
-		fftBinNotes[fftBin] = closestNote(binFrequency, highest)
+		fftBinNotes[fftBin] = ClosestNote(binFrequency, highest)
 	}
 	return fftBinNotes
 }
@@ -32,9 +32,9 @@ func GetLEDLumas(window []int16, lumas []uint8, fftBinLEDs []int) {
 	}
 }
 
-func run(deviceName string, nLEDs int, lowest Note, bufferFrames int, periodFrames int,
+func Run(deviceName string, lowest Note, bufferFrames int, periodFrames int,
 	windowFrames int, ledLumas []uint8) {
-	var highest = Note(int(lowest) + nLEDs - 1)
+	var highest = Note(int(lowest) + 64 - 1)
 	// mono audio buffer
 	var monoBufferSize int = bufferFrames
 	var readBufferSize int = periodFrames * 2

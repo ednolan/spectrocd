@@ -16,7 +16,7 @@ func main() {
 	var deviceName = viper.GetString("deviceName")
 
 	// 64 LED array
-	var nLEDs = viper.GetInt("nLEDs")
+	var nLEDs = 64
 
 	// lowest note
 	var lowest = Note(viper.GetInt("lowest"))
@@ -31,8 +31,8 @@ func main() {
 
 	InitUnicornHat()
 
-	go DisplayLoop(nLEDs, ledLumas)
+	go DisplayLoop(ledLumas)
 
-	run(deviceName, nLEDs, lowest, bufferFrames, periodFrames, windowFrames, ledLumas)
+	Run(deviceName, lowest, bufferFrames, periodFrames, windowFrames, ledLumas)
 
 }
