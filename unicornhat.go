@@ -1,7 +1,7 @@
 package main
 import (
 	"fmt"
-	"github.com/jgarff/rpi_ws281x/golang/ws2811"
+	"github.com/ednolan/rpi_ws281x/golang/ws2811"
 	"github.com/lucasb-eyer/go-colorful"
 	"time"
 )
